@@ -7,15 +7,17 @@ The assumption is that the file contains a set of multi-line records separated b
 ## Example
 
 ```perl
+#!/usr/bin/perl
 use FastaReader;
+
 my $file = shift;
-open FILE,"<$file";
-my $parser = new FastaReader(\\\*FILE);
-while (my $seq = $parser->getRecord()){
-    printf("SeqName:%s\n",$seq->name());
-    printf("SeqLength:%s\n",$seq->length());
-    printf("SeqSequence:%s\n",$seq->seq());
-    ...
+open(IN,$file) || die "Cannot open $ARGV[0]: $!\n";
+
+my $parser = new FastaReader(\*IN);
+while (my $seqobj = $parser->getRecord()) {
+    printf ("%s\n", $seqobj->seq);
+    printf ("%s\n", $seqobj->name);
+    printf ("%s\n", $seqobj->length); 
 }
 ```
 
