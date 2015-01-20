@@ -14,7 +14,7 @@ my $file = shift;
 open(IN,$file) || die "Cannot open $ARGV[0]: $!\n";
 
 my $parser = new FastaReader(\*IN);
-while (my $seqobj = $parser->getRecord()) {
+while (my $seqobj = $parser->next_seq()) {
     printf ("%s\n", $seqobj->seq);
     printf ("%s\n", $seqobj->name);
     printf ("%s\n", $seqobj->length); 
@@ -39,7 +39,7 @@ by spaces.
     header separator ($header - default '>') and a line separator 
     ($sep - default '')
 
-- `$seq = $parser->getRecord()`
+- `$seq = $parser->next_seq()`
 
     Reads a record into an object of obj. If no more records remain returns undef.
 

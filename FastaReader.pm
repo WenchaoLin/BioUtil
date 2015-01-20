@@ -35,7 +35,7 @@ sub new{
     return $self;
 }
 
-sub getRecord{
+sub next_seq{
     my $self = shift;
     my $head;
     my $data;
@@ -125,7 +125,7 @@ open FILE,"<$file";
 
 my $parser = new FastaReader(\*FILE);
 
-while (my $seq = $parser->getRecord()){
+while (my $seq = $parser->next_seq()){
 
     printf("SeqName:%s\n",$seq->name());
 
@@ -155,7 +155,7 @@ Creates a new parser object reading from file $file and using a specific
 header separator ($header - default '>') and a line separator 
 ($sep - default '')
 
-=item $seq = $parser->getRecord();
+=item $seq = $parser->next_seq();
 
 Reads a record into an object of obj. If no more records remain returns undef.
 
