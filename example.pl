@@ -4,9 +4,7 @@ use FastaReader;
 
 my $file = shift;
 
-open(IN,$file) || die "Cannot open $ARGV[0]: $!\n";
-
-my $fa = new FastaReader(\*IN);
+my $fa = new FastaReader($file);
 
 while (my $seqobj = $fa->next_seq()) {
     printf ("%s\n", $seqobj->seq());

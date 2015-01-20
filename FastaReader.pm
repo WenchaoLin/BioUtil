@@ -6,30 +6,30 @@
 
 package FastaReader;
 
-sub new{
-    my $pkg = shift;
+sub new {
+    my $class = shift;
     my $file = shift;
-    my $headsep = shift;
-    my $linesep = shift;
+    my $self  = {
+        id          => '',
+        descriptors => [],
+        comments    => [],
+        sequence    => [],
+        file        => $file,
+    };
+    bless($self, $class);
 
-    my $self = {};
-    bless $self;
-
-    $self->{headsep} = '>'; 
-    $self->{headsep} = $headsep if defined $headsep;
-    $self->{linesep} = ''; 
-    $self->{linesep} = $linesep if defined $linesep;
-    $self->{file} = $file;
+    open $FH,"<$file";
     $self->{tell} = CORE::tell($file);
 
-    $self->{buf} = <$file>;
+    $self->{fh} = $FH;
+    $self->{buf} = <$FH>;
     if (! defined $self->{buf}){
-	print STDERR "File appears empty\n";
-	return undef;
+        print STDERR "File appears empty\n";
+        return undef;
     }
     if ($self->{buf} !~ /^$self->{headsep}/){
-	print STDERR "File doesn't start with a header: $headsep\n";
-	return undef;
+        print STDERR "File doesn't start with a header: $headsep\n";
+        return undef;
     }
     chomp $self->{buf};
     return $self;
@@ -39,30 +39,29 @@ sub next_seq{
     my $self = shift;
     my $head;
     my $data;
-    my $file = $self->{file};
-    my $tl;
+    my $file = $self->{fh};
 
-    if (! defined $self->{buf} || $self->{buf} !~ /^$self->{headsep}/){
+    if (! defined $self->{buf} || $self->{buf} !~ /^>/){
         return ();
     }
 
     $head = $self->{buf};
-    $head =~ s/^$self->{headsep}//;
+    $head =~ s/^>//;
     $tl = CORE::tell($file);
     $self->{buf} = <$file>;
     chomp $self->{buf};
-    while (defined $self->{buf} && $self->{buf} !~ /^$self->{headsep}/){
-        $data .= $self->{buf} . $self->{linesep};
+    while (defined $self->{buf} && $self->{buf} !~ /^>/){
+        $data .= $self->{buf};
         $tl = CORE::tell($file);
         $self->{buf} = <$file>;
         if (defined $self->{buf}){chomp $self->{buf}};
     }
     $self->{tell} = $tl;
-    $self->{seq} = $data;
-    $self->{name} = $head;
+    $self->{sequence} = $data;
+    $self->{id} = $head;
     return $self;
-}
 
+}
 
 sub seek{
     my $self = shift;
@@ -93,18 +92,23 @@ sub tell{
 
 sub length{
     my $self = shift;
-    $self->{len} = length $self->{seq};
+    $self->{len} = length $self->{sequence};
     return $self->{len};
 }
 
 sub name{
     my $self = shift;
-    return $self->{name};
+    return $self->{id};
+}
+
+sub id{
+    my $self = shift;
+    return $self->{id};
 }
 
 sub seq{
     my $self = shift;
-    return $self->{seq};
+    return $self->{sequence};
 }
 
 1;
