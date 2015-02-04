@@ -61,4 +61,4 @@ by spaces.
 
 ## AUTHOR
 
-Wenchao Lin <linwenchao@yeah.net>
+Wenchao Lin <linwenchao(at)yeah.net>
